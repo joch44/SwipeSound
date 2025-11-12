@@ -16,11 +16,9 @@ class MusicDiscoveryViewModel: ObservableObject {
     @Published var skippedSongs: [Song] = []
     @Published var showFilterPanel = false
 
-    private let spotifyService: SpotifyService
     private var allAvailableSongs: [Song] = []
 
-    init(spotifyService: SpotifyService) {
-        self.spotifyService = spotifyService
+    init() {
         loadMockSongs()
         updateSongQueue()
     }
@@ -85,13 +83,6 @@ class MusicDiscoveryViewModel: ObservableObject {
     /// Handle liking a song
     private func handleLike(_ song: Song) {
         likedSongs.append(song)
-
-        // If connected to Spotify, add to playlist
-        if spotifyService.isAuthenticated {
-            Task {
-                await spotifyService.addSongToPlaylist(spotifyURI: song.spotifyURI)
-            }
-        }
     }
 
     /// Handle skipping a song
@@ -126,183 +117,278 @@ class MusicDiscoveryViewModel: ObservableObject {
         allAvailableSongs = [
             Song(
                 id: "1",
-                title: "Midnight Dreams",
-                artist: "The Dream Makers",
-                albumArt: "https://example.com/album1.jpg",
-                genre: ["Pop", "Electronic"],
-                duration: 243,
-                previewURL: "https://example.com/preview1.mp3",
-                spotifyURI: "spotify:track:midnight-dreams",
+                title: "Blinding Lights",
+                artist: "The Weeknd",
+                albumArt: "",
+                genre: ["Pop", "Synthwave"],
+                duration: 200,
+                previewURL: nil,
                 energyLevel: .upbeat,
-                mood: [.happy, .motivated]
+                mood: [.happy, .party]
             ),
             Song(
                 id: "2",
-                title: "Sunset Boulevard",
-                artist: "Coastal Vibes",
-                albumArt: "https://example.com/album2.jpg",
-                genre: ["Indie", "Alternative"],
-                duration: 195,
-                previewURL: "https://example.com/preview2.mp3",
-                spotifyURI: "spotify:track:sunset-boulevard",
-                energyLevel: .chill,
-                mood: [.relaxed, .happy]
+                title: "Shape of You",
+                artist: "Ed Sheeran",
+                albumArt: "",
+                genre: ["Pop", "Dance"],
+                duration: 234,
+                previewURL: nil,
+                energyLevel: .upbeat,
+                mood: [.happy, .romantic]
             ),
             Song(
                 id: "3",
-                title: "Thunder Strike",
-                artist: "Electric Storm",
-                albumArt: "https://example.com/album3.jpg",
-                genre: ["Rock", "Electronic"],
-                duration: 287,
-                previewURL: "https://example.com/preview3.mp3",
-                spotifyURI: "spotify:track:thunder-strike",
+                title: "Bohemian Rhapsody",
+                artist: "Queen",
+                albumArt: "",
+                genre: ["Rock", "Classic Rock"],
+                duration: 354,
+                previewURL: nil,
                 energyLevel: .energetic,
-                mood: [.motivated, .party]
+                mood: [.motivated, .happy]
             ),
             Song(
                 id: "4",
-                title: "Whispered Secrets",
-                artist: "Acoustic Soul",
-                albumArt: "https://example.com/album4.jpg",
-                genre: ["Acoustic", "Folk"],
-                duration: 214,
-                previewURL: "https://example.com/preview4.mp3",
-                spotifyURI: "spotify:track:whispered-secrets",
-                energyLevel: .chill,
-                mood: [.romantic, .melancholic]
-            ),
-            Song(
-                id: "5",
-                title: "City Lights",
-                artist: "Urban Beats",
-                albumArt: "https://example.com/album5.jpg",
-                genre: ["Hip Hop", "R&B"],
-                duration: 201,
-                previewURL: "https://example.com/preview5.mp3",
-                spotifyURI: "spotify:track:city-lights",
-                energyLevel: .moderate,
-                mood: [.focus, .motivated]
-            ),
-            Song(
-                id: "6",
-                title: "Ocean Waves",
-                artist: "Chill Masters",
-                albumArt: "https://example.com/album6.jpg",
-                genre: ["Ambient", "Electronic"],
-                duration: 324,
-                previewURL: "https://example.com/preview6.mp3",
-                spotifyURI: "spotify:track:ocean-waves",
-                energyLevel: .chill,
-                mood: [.relaxed, .focus]
-            ),
-            Song(
-                id: "7",
-                title: "Dance Revolution",
-                artist: "Party Squad",
-                albumArt: "https://example.com/album7.jpg",
-                genre: ["EDM", "Dance"],
-                duration: 178,
-                previewURL: "https://example.com/preview7.mp3",
-                spotifyURI: "spotify:track:dance-revolution",
-                energyLevel: .energetic,
-                mood: [.party, .happy]
-            ),
-            Song(
-                id: "8",
-                title: "Rainy Day Blues",
-                artist: "Melancholy Hearts",
-                albumArt: "https://example.com/album8.jpg",
-                genre: ["Blues", "Jazz"],
-                duration: 256,
-                previewURL: "https://example.com/preview8.mp3",
-                spotifyURI: "spotify:track:rainy-day-blues",
+                title: "Someone Like You",
+                artist: "Adele",
+                albumArt: "",
+                genre: ["Pop", "Ballad"],
+                duration: 285,
+                previewURL: nil,
                 energyLevel: .chill,
                 mood: [.sad, .melancholic]
             ),
             Song(
+                id: "5",
+                title: "Levitating",
+                artist: "Dua Lipa",
+                albumArt: "",
+                genre: ["Pop", "Disco"],
+                duration: 203,
+                previewURL: nil,
+                energyLevel: .energetic,
+                mood: [.party, .happy]
+            ),
+            Song(
+                id: "6",
+                title: "Stairway to Heaven",
+                artist: "Led Zeppelin",
+                albumArt: "",
+                genre: ["Rock", "Classic Rock"],
+                duration: 482,
+                previewURL: nil,
+                energyLevel: .moderate,
+                mood: [.motivated, .melancholic]
+            ),
+            Song(
+                id: "7",
+                title: "Lo-Fi Study Beats",
+                artist: "ChilledCow",
+                albumArt: "",
+                genre: ["Lo-Fi", "Hip Hop"],
+                duration: 158,
+                previewURL: nil,
+                energyLevel: .chill,
+                mood: [.focus, .relaxed]
+            ),
+            Song(
+                id: "8",
+                title: "Uptown Funk",
+                artist: "Mark Ronson ft. Bruno Mars",
+                albumArt: "",
+                genre: ["Funk", "Pop"],
+                duration: 269,
+                previewURL: nil,
+                energyLevel: .energetic,
+                mood: [.party, .happy]
+            ),
+            Song(
                 id: "9",
-                title: "Morning Motivation",
-                artist: "Energy Boost",
-                albumArt: "https://example.com/album9.jpg",
-                genre: ["Pop", "Rock"],
-                duration: 189,
-                previewURL: "https://example.com/preview9.mp3",
-                spotifyURI: "spotify:track:morning-motivation",
-                energyLevel: .upbeat,
-                mood: [.motivated, .happy]
+                title: "Circles",
+                artist: "Post Malone",
+                albumArt: "",
+                genre: ["Pop", "Hip Hop"],
+                duration: 215,
+                previewURL: nil,
+                energyLevel: .moderate,
+                mood: [.relaxed, .melancholic]
             ),
             Song(
                 id: "10",
-                title: "Jazz in the Night",
-                artist: "Smooth Jazz Collective",
-                albumArt: "https://example.com/album10.jpg",
-                genre: ["Jazz", "Smooth Jazz"],
-                duration: 298,
-                previewURL: "https://example.com/preview10.mp3",
-                spotifyURI: "spotify:track:jazz-night",
-                energyLevel: .moderate,
-                mood: [.relaxed, .romantic]
+                title: "Take Five",
+                artist: "Dave Brubeck",
+                albumArt: "",
+                genre: ["Jazz", "Classic Jazz"],
+                duration: 324,
+                previewURL: nil,
+                energyLevel: .chill,
+                mood: [.relaxed, .focus]
             ),
             Song(
                 id: "11",
-                title: "Workout Anthem",
-                artist: "Fitness Beats",
-                albumArt: "https://example.com/album11.jpg",
-                genre: ["Electronic", "Workout"],
-                duration: 167,
-                previewURL: "https://example.com/preview11.mp3",
-                spotifyURI: "spotify:track:workout-anthem",
+                title: "Thunderstruck",
+                artist: "AC/DC",
+                albumArt: "",
+                genre: ["Rock", "Hard Rock"],
+                duration: 292,
+                previewURL: nil,
                 energyLevel: .energetic,
                 mood: [.motivated, .party]
             ),
             Song(
                 id: "12",
-                title: "Study Session",
-                artist: "Lo-Fi Vibes",
-                albumArt: "https://example.com/album12.jpg",
-                genre: ["Lo-Fi", "Hip Hop"],
-                duration: 145,
-                previewURL: "https://example.com/preview12.mp3",
-                spotifyURI: "spotify:track:study-session",
+                title: "Perfect",
+                artist: "Ed Sheeran",
+                albumArt: "",
+                genre: ["Pop", "Ballad"],
+                duration: 263,
+                previewURL: nil,
                 energyLevel: .chill,
-                mood: [.focus, .relaxed]
+                mood: [.romantic, .happy]
             ),
             Song(
                 id: "13",
-                title: "Summer Breeze",
-                artist: "Tropical Sounds",
-                albumArt: "https://example.com/album13.jpg",
-                genre: ["Reggae", "Pop"],
-                duration: 221,
-                previewURL: "https://example.com/preview13.mp3",
-                spotifyURI: "spotify:track:summer-breeze",
+                title: "God's Plan",
+                artist: "Drake",
+                albumArt: "",
+                genre: ["Hip Hop", "Rap"],
+                duration: 219,
+                previewURL: nil,
                 energyLevel: .moderate,
-                mood: [.happy, .relaxed]
+                mood: [.motivated, .happy]
             ),
             Song(
                 id: "14",
-                title: "Heartbreak Hotel",
-                artist: "Emotional Express",
-                albumArt: "https://example.com/album14.jpg",
-                genre: ["Pop", "Ballad"],
-                duration: 267,
-                previewURL: "https://example.com/preview14.mp3",
-                spotifyURI: "spotify:track:heartbreak-hotel",
+                title: "Moonlight Sonata",
+                artist: "Beethoven",
+                albumArt: "",
+                genre: ["Classical", "Piano"],
+                duration: 900,
+                previewURL: nil,
                 energyLevel: .chill,
-                mood: [.sad, .romantic]
+                mood: [.melancholic, .focus]
             ),
             Song(
                 id: "15",
-                title: "Victory March",
-                artist: "Epic Orchestra",
-                albumArt: "https://example.com/album15.jpg",
-                genre: ["Classical", "Epic"],
-                duration: 312,
-                previewURL: "https://example.com/preview15.mp3",
-                spotifyURI: "spotify:track:victory-march",
-                energyLevel: .energetic,
+                title: "Bad Guy",
+                artist: "Billie Eilish",
+                albumArt: "",
+                genre: ["Pop", "Alternative"],
+                duration: 194,
+                previewURL: nil,
+                energyLevel: .moderate,
+                mood: [.motivated, .party]
+            ),
+            Song(
+                id: "16",
+                title: "Don't Stop Believin'",
+                artist: "Journey",
+                albumArt: "",
+                genre: ["Rock", "Classic Rock"],
+                duration: 251,
+                previewURL: nil,
+                energyLevel: .upbeat,
                 mood: [.motivated, .happy]
+            ),
+            Song(
+                id: "17",
+                title: "Sicko Mode",
+                artist: "Travis Scott",
+                albumArt: "",
+                genre: ["Hip Hop", "Trap"],
+                duration: 312,
+                previewURL: nil,
+                energyLevel: .energetic,
+                mood: [.party, .motivated]
+            ),
+            Song(
+                id: "18",
+                title: "Bitter Sweet Symphony",
+                artist: "The Verve",
+                albumArt: "",
+                genre: ["Alternative", "Rock"],
+                duration: 358,
+                previewURL: nil,
+                energyLevel: .moderate,
+                mood: [.melancholic, .motivated]
+            ),
+            Song(
+                id: "19",
+                title: "Watermelon Sugar",
+                artist: "Harry Styles",
+                albumArt: "",
+                genre: ["Pop", "Rock"],
+                duration: 174,
+                previewURL: nil,
+                energyLevel: .upbeat,
+                mood: [.happy, .party]
+            ),
+            Song(
+                id: "20",
+                title: "Lucid Dreams",
+                artist: "Juice WRLD",
+                albumArt: "",
+                genre: ["Hip Hop", "Emo Rap"],
+                duration: 239,
+                previewURL: nil,
+                energyLevel: .moderate,
+                mood: [.sad, .melancholic]
+            ),
+            Song(
+                id: "21",
+                title: "Sweet Child O' Mine",
+                artist: "Guns N' Roses",
+                albumArt: "",
+                genre: ["Rock", "Hard Rock"],
+                duration: 356,
+                previewURL: nil,
+                energyLevel: .energetic,
+                mood: [.happy, .motivated]
+            ),
+            Song(
+                id: "22",
+                title: "Summertime Sadness",
+                artist: "Lana Del Rey",
+                albumArt: "",
+                genre: ["Pop", "Indie"],
+                duration: 265,
+                previewURL: nil,
+                energyLevel: .moderate,
+                mood: [.melancholic, .romantic]
+            ),
+            Song(
+                id: "23",
+                title: "Ocean Eyes",
+                artist: "Billie Eilish",
+                albumArt: "",
+                genre: ["Pop", "Indie"],
+                duration: 200,
+                previewURL: nil,
+                energyLevel: .chill,
+                mood: [.relaxed, .romantic]
+            ),
+            Song(
+                id: "24",
+                title: "HUMBLE.",
+                artist: "Kendrick Lamar",
+                albumArt: "",
+                genre: ["Hip Hop", "Rap"],
+                duration: 177,
+                previewURL: nil,
+                energyLevel: .energetic,
+                mood: [.motivated, .party]
+            ),
+            Song(
+                id: "25",
+                title: "Imagine",
+                artist: "John Lennon",
+                albumArt: "",
+                genre: ["Rock", "Classic"],
+                duration: 183,
+                previewURL: nil,
+                energyLevel: .chill,
+                mood: [.relaxed, .happy]
             )
         ]
     }

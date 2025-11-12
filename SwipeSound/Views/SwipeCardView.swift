@@ -193,15 +193,14 @@ struct SwipeCardView: View {
     SwipeCardView(
         song: Song(
             id: "1",
-            title: "Midnight Dreams",
-            artist: "The Dream Makers",
+            title: "Blinding Lights",
+            artist: "The Weeknd",
             albumArt: "",
-            genre: ["Pop", "Electronic"],
-            duration: 243,
+            genre: ["Pop", "Synthwave"],
+            duration: 200,
             previewURL: nil,
-            spotifyURI: "spotify:track:example",
             energyLevel: .upbeat,
-            mood: [.happy, .motivated]
+            mood: [.happy, .party]
         ),
         onSwipe: { _ in }
     )

@@ -16,7 +16,6 @@ struct Song: Identifiable, Codable, Equatable {
     let genre: [String]
     let duration: Int // Duration in seconds
     let previewURL: String? // URL to 15-30 second preview
-    let spotifyURI: String // Spotify URI for adding to playlist
     let energyLevel: EnergyLevel
     let mood: [MoodTag]
 

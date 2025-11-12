@@ -8,16 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var spotifyService: SpotifyService
-    @StateObject private var viewModel: MusicDiscoveryViewModel
-
-    @State private var showSpotifyAuth = false
-
-    init() {
-        let spotify = SpotifyService()
-        _spotifyService = StateObject(wrappedValue: spotify)
-        _viewModel = StateObject(wrappedValue: MusicDiscoveryViewModel(spotifyService: spotify))
-    }
+    @StateObject private var viewModel = MusicDiscoveryViewModel()
 
     var body: some View {
         NavigationView {
@@ -67,9 +58,6 @@ struct ContentView: View {
                     }
                 )
             }
-            .sheet(isPresented: $showSpotifyAuth) {
-                SpotifyAuthView(spotifyService: spotifyService)
-            }
         }
     }
 
@@ -90,9 +78,6 @@ struct ContentView: View {
                 }
 
                 Spacer()
-
-                // Spotify connection button
-                spotifyButton
             }
 
             // Stats bar
@@ -126,28 +111,6 @@ struct ContentView: View {
                     .cornerRadius(12)
                 }
             }
-        }
-    }
-
-    private var spotifyButton: some View {
-        Button(action: {
-            if spotifyService.isAuthenticated {
-                // Show Spotify info
-            } else {
-                showSpotifyAuth = true
-            }
-        }) {
-            HStack(spacing: 6) {
-                Image(systemName: spotifyService.isAuthenticated ? "checkmark.circle.fill" : "music.note")
-                Text(spotifyService.isAuthenticated ? "Connected" : "Connect")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(spotifyService.isAuthenticated ? Color.green : Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(20)
         }
     }
 
@@ -253,97 +216,6 @@ struct StatBadge: View {
         .padding(.vertical, 5)
         .background(color.opacity(0.2))
         .cornerRadius(12)
-    }
-}
-
-struct SpotifyAuthView: View {
-    @ObservedObject var spotifyService: SpotifyService
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 30) {
-                Spacer()
-
-                // Spotify logo placeholder
-                Image(systemName: "music.note.circle.fill")
-                    .font(.system(size: 100))
-                    .foregroundColor(.green)
-
-                VStack(spacing: 12) {
-                    Text("Connect to Spotify")
-                        .font(.title)
-                        .fontWeight(.bold)
-
-                    Text("Automatically add your liked songs to a custom Spotify playlist")
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                }
-
-                VStack(spacing: 16) {
-                    FeatureRow(icon: "checkmark.circle", text: "Secure OAuth 2.0 authentication")
-                    FeatureRow(icon: "music.note.list", text: "Auto-create 'SoundSwipe Playlist'")
-                    FeatureRow(icon: "arrow.triangle.2.circlepath", text: "Automatic song syncing")
-                    FeatureRow(icon: "shield.fill", text: "No duplicate songs")
-                }
-                .padding(.horizontal, 40)
-
-                Button(action: {
-                    spotifyService.authenticate()
-                    // Simulated auth - in production would use OAuth flow
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                        dismiss()
-                    }
-                }) {
-                    HStack {
-                        Image(systemName: "music.note")
-                        Text("Connect with Spotify")
-                            .fontWeight(.semibold)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(25)
-                }
-                .padding(.horizontal, 40)
-
-                if let error = spotifyService.errorMessage {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundColor(.red)
-                        .padding(.horizontal, 40)
-                }
-
-                Spacer()
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-}
-
-struct FeatureRow: View {
-    let icon: String
-    let text: String
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .foregroundColor(.green)
-                .frame(width: 24)
-            Text(text)
-                .font(.subheadline)
-            Spacer()
-        }
     }
 }
 

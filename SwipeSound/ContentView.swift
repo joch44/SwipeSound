@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var spotifyService = SpotifyService()
+    @StateObject private var spotifyService: SpotifyService
     @StateObject private var viewModel: MusicDiscoveryViewModel
 
     @State private var showSpotifyAuth = false
